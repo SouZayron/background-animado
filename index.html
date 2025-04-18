@@ -1,0 +1,56 @@
+
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Background Animado</title>
+  <style>
+    html, body {
+      margin: 0;
+      padding: 0;
+      overflow: hidden;
+      height: 100%;
+      background: #000;
+      color: white;
+      font-family: sans-serif;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+    }
+
+    #particles {
+      position: absolute;
+      width: 100%;
+      height: 100%;
+      z-index: 0;
+    }
+
+    .content {
+      z-index: 1;
+      text-align: center;
+    }
+  </style>
+</head>
+<body>
+  <div id="particles"></div>
+  <div class="content">
+    <h1>Olá mundo!</h1>
+    <p>Esse é um fundo com partículas animadas.</p>
+  </div>
+
+  <script src="https://cdn.jsdelivr.net/gh/jnicol/particleground/jquery.particleground.min.js"></script>
+  <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+  <script>
+    $(document).ready(function () {
+      $('#particles').particleground({
+        dotColor: '#ffffff',
+        lineColor: '#ffffff',
+        density: 10000,
+        particleRadius: 3,
+        lineWidth: 0.5
+      });
+    });
+  </script>
+</body>
+</html>
