@@ -103,18 +103,19 @@
       }
     }
 
-    /* Texto ajustado 10% para a esquerda */
+    /* Novo posicionamento do texto */
     .url-text {
       position: absolute;
-      right: calc(30px - 10%); /* Ajuste de 10% para a esquerda */
+      right: 5%; /* Posicionado 5% da borda direita */
       top: 50%;
       transform: translateY(-50%);
       font-size: 24px;
       text-shadow: 0 0 10px #00ff00;
       white-space: nowrap;
+      max-width: 45%; /* Garante que não ultrapasse o background */
     }
 
-    /* Animação como solicitado */
+    /* Animação corrigida */
     .letter {
       display: inline-block;
       opacity: 0;
@@ -181,7 +182,7 @@
       }
     }
 
-    // Animação do texto em loop a cada 10 segundos
+    // Animação do texto em loop
     function animateUrlText() {
       const text = "xat.com/grupodocareca";
       const container = document.getElementById('animated-url');
@@ -189,21 +190,18 @@
       function runAnimation() {
         container.innerHTML = '';
         
-        // Criar cada letra como span separado
         for (let i = 0; i < text.length; i++) {
           const span = document.createElement('span');
           span.className = 'letter';
           span.textContent = text[i];
           container.appendChild(span);
           
-          // Animação com delay progressivo
           setTimeout(() => {
             span.classList.add('in');
           }, 150 * i);
         }
       }
       
-      // Executar imediatamente e depois a cada 10 segundos
       runAnimation();
       setInterval(runAnimation, 10000);
     }
