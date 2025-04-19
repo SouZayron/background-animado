@@ -103,10 +103,10 @@
       }
     }
 
-    /* Texto ajustado 5% para a esquerda */
+    /* Texto ajustado 10% para a esquerda */
     .url-text {
       position: absolute;
-      right: calc(30px - 5%); /* Ajuste de 5% para a esquerda */
+      right: calc(30px - 10%); /* Ajuste de 10% para a esquerda */
       top: 50%;
       transform: translateY(-50%);
       font-size: 24px;
@@ -114,7 +114,7 @@
       white-space: nowrap;
     }
 
-    /* Animação exatamente como solicitada */
+    /* Animação como solicitado */
     .letter {
       display: inline-block;
       opacity: 0;
@@ -181,35 +181,31 @@
       }
     }
 
-    // Animação do texto EXATAMENTE como solicitado
+    // Animação do texto em loop a cada 10 segundos
     function animateUrlText() {
       const text = "xat.com/grupodocareca";
       const container = document.getElementById('animated-url');
-      container.innerHTML = '';
       
-      // Criar cada letra como span separado
-      for (let i = 0; i < text.length; i++) {
-        const span = document.createElement('span');
-        span.className = 'letter';
-        span.textContent = text[i];
-        container.appendChild(span);
+      function runAnimation() {
+        container.innerHTML = '';
         
-        // Animação com delay progressivo
-        setTimeout(() => {
-          span.classList.add('in');
-        }, 150 * i); // Delay entre letras
+        // Criar cada letra como span separado
+        for (let i = 0; i < text.length; i++) {
+          const span = document.createElement('span');
+          span.className = 'letter';
+          span.textContent = text[i];
+          container.appendChild(span);
+          
+          // Animação com delay progressivo
+          setTimeout(() => {
+            span.classList.add('in');
+          }, 150 * i);
+        }
       }
       
-      // Efeito contínuo (opcional)
-      setInterval(() => {
-        const letters = document.querySelectorAll('.letter.in');
-        letters.forEach((letter, index) => {
-          setTimeout(() => {
-            letter.classList.remove('in');
-            setTimeout(() => letter.classList.add('in'), 50);
-          }, index * 50);
-        });
-      }, 5000); // Repete a cada 5 segundos
+      // Executar imediatamente e depois a cada 10 segundos
+      runAnimation();
+      setInterval(runAnimation, 10000);
     }
 
     window.onload = function() {
