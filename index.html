@@ -40,7 +40,7 @@
 
     .content {
       position: absolute;
-      left: 20px; /* Ajustado para mais à esquerda */
+      left: 10%; /* Posicionado 20% mais à esquerda (era 50px) */
       top: 50%;
       transform: translateY(-50%);
       z-index: 1;
@@ -55,15 +55,15 @@
     .logo {
       height: auto;
       width: auto;
-      max-height: 50vh; /* Reduzido em ~30% (de 70vh para 50vh) */
-      max-width: 60vw;  /* Reduzido proporcionalmente */
+      max-height: 35vh; /* Reduzido 30% (era 50vh) */
+      max-width: 42vw;  /* Reduzido proporcionalmente */
       object-fit: contain;
       filter: drop-shadow(0 0 10px rgba(0, 255, 0, 0.7));
     }
 
     .color-picker {
       position: absolute;
-      top: 20px;
+      bottom: 30px; /* Movido para baixo */
       right: 20px;
       z-index: 10;
       display: flex;
