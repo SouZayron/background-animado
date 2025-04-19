@@ -63,7 +63,7 @@
 
     .color-picker {
       position: absolute;
-      bottom: 15%; /* Posicionado 15% a partir da base */
+      bottom: 15%;
       right: 20px;
       z-index: 10;
       display: flex;
@@ -102,6 +102,27 @@
         transform: translateY(100vh);
       }
     }
+
+    .url-text {
+      position: absolute;
+      right: 30px;
+      top: 50%;
+      transform: translateY(-50%);
+      font-size: 24px;
+      text-shadow: 0 0 10px #00ff00;
+    }
+
+    .letter {
+      display: inline-block;
+      opacity: 0;
+      transform: translateY(20px);
+    }
+
+    .letter.in {
+      opacity: 1;
+      transform: translateY(0);
+      transition: all 0.4s ease;
+    }
   </style>
 </head>
 <body>
@@ -119,13 +140,26 @@
     <img src="https://xatimg.com/image/cuyXWkW6jyzH.png" alt="Rádio Estilo Hits" class="logo">
   </div>
 
+  <div class="url-text" id="animated-url"></div>
+
   <script>
-    // Função para mudar a cor de fundo
-    document.querySelectorAll('.color-option').forEach(option => {
-      option.addEventListener('click', function() {
-        document.body.style.background = this.getAttribute('data-color');
+    // Função CORRIGIDA para mudar a cor de fundo
+    function setupColorPicker() {
+      const colorOptions = document.querySelectorAll('.color-option');
+      
+      colorOptions.forEach(option => {
+        option.addEventListener('click', function() {
+          const color = this.getAttribute('data-color');
+          document.body.style.background = color;
+          
+          // Adiciona feedback visual
+          this.style.transform = 'scale(1.4)';
+          setTimeout(() => {
+            this.style.transform = 'scale(1)';
+          }, 200);
+        });
       });
-    });
+    }
 
     // Criar flocos de neve
     function createSnowflakes() {
@@ -149,7 +183,31 @@
       }
     }
 
-    window.onload = createSnowflakes;
+    // Animação do texto
+    function animateUrlText() {
+      const text = "xat.com/grupodocareca";
+      const container = document.getElementById('animated-url');
+      
+      container.innerHTML = '';
+      
+      for (let i = 0; i < text.length; i++) {
+        const span = document.createElement('span');
+        span.className = 'letter';
+        span.textContent = text[i];
+        container.appendChild(span);
+        
+        setTimeout(() => {
+          span.classList.add('in');
+        }, 100 * i);
+      }
+    }
+
+    // Iniciar quando a página carregar
+    window.onload = function() {
+      createSnowflakes();
+      animateUrlText();
+      setupColorPicker(); // Inicializa o color picker
+    };
   </script>
 </body>
 </html>
