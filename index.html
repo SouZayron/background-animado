@@ -13,7 +13,7 @@
       overflow: hidden;
       font-family: 'Segoe UI', sans-serif;
       color: white;
-      transition: background 0.5s ease;
+      transition: background 0.5s ease, color 0.5s ease;
     }
 
     .stars {
@@ -61,31 +61,31 @@
       filter: drop-shadow(0 0 10px rgba(0, 255, 0, 0.7));
     }
 
-    .color-picker {
+    .color-switcher {
       position: absolute;
       bottom: 15%;
       right: 20px;
       z-index: 10;
-      display: flex;
-      gap: 8px;
       background: rgba(0, 0, 0, 0.7);
-      padding: 10px;
-      border-radius: 15px;
+      width: 40px;
+      height: 40px;
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      cursor: pointer;
+      border: 1px solid white;
+      transition: all 0.3s;
       box-shadow: 0 0 10px rgba(0,0,0,0.5);
     }
 
-    .color-option {
-      width: 15px;
-      height: 15px;
-      border-radius: 50%;
-      cursor: pointer;
-      border: 1px solid white;
-      transition: all 0.2s;
+    .color-switcher:hover {
+      transform: scale(1.1);
+      background: rgba(0, 0, 0, 0.9);
     }
 
-    .color-option:hover {
-      transform: scale(1.3);
-      border-width: 2px;
+    .color-switcher i {
+      font-size: 20px;
     }
 
     .snowflake {
@@ -103,19 +103,18 @@
       }
     }
 
-    /* Novo posicionamento do texto */
     .url-text {
       position: absolute;
-      right: 5%; /* Posicionado 5% da borda direita */
+      right: 5%;
       top: 50%;
       transform: translateY(-50%);
       font-size: 24px;
-      text-shadow: 0 0 10px #00ff00;
+      text-shadow: 0 0 10px currentColor; /* Usa a cor atual do texto */
       white-space: nowrap;
-      max-width: 45%; /* Garante que não ultrapasse o background */
+      max-width: 45%;
+      transition: color 0.5s ease; /* Transição suave para mudança de cor */
     }
 
-    /* Animação corrigida */
     .letter {
       display: inline-block;
       opacity: 0;
@@ -128,16 +127,13 @@
       transition: all 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
     }
   </style>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
 </head>
 <body>
   <div class="stars"></div>
   
-  <div class="color-picker">
-    <div class="color-option" style="background: #36452f;" title="Verde musgo" data-color="#36452f"></div>
-    <div class="color-option" style="background: #76a870;" title="Verde claro" data-color="#76a870"></div>
-    <div class="color-option" style="background: #bdc82b;" title="Verde limão" data-color="#bdc82b"></div>
-    <div class="color-option" style="background: #ddf0d5;" title="Verde pastel" data-color="#ddf0d5"></div>
-    <div class="color-option" style="background: #161616;" title="Preto" data-color="#161616"></div>
+  <div class="color-switcher" title="Trocar cor de fundo">
+    <i class="fas fa-sync-alt"></i>
   </div>
   
   <div class="content">
@@ -147,18 +143,35 @@
   <div class="url-text" id="animated-url"></div>
 
   <script>
-    // Função para mudar a cor de fundo
-    function setupColorPicker() {
-      const colorOptions = document.querySelectorAll('.color-option');
+    // Cores disponíveis para fundo e texto correspondente
+    const colorSchemes = [
+      { bg: '#36452f', text: '#ffffff' },  // Verde musgo - texto branco
+      { bg: '#76a870', text: '#000000' },  // Verde claro - texto preto
+      { bg: '#bdc82b', text: '#000000' },  // Verde limão - texto preto
+      { bg: '#ddf0d5', text: '#000000' },  // Verde pastel - texto preto
+      { bg: '#161616', text: '#ffffff' }   // Preto - texto branco
+    ];
+    
+    let currentColorIndex = 0;
+
+    // Função para trocar a cor
+    function switchBackgroundColor() {
+      currentColorIndex = (currentColorIndex + 1) % colorSchemes.length;
+      const scheme = colorSchemes[currentColorIndex];
       
-      colorOptions.forEach(option => {
-        option.addEventListener('click', function() {
-          document.body.style.background = this.getAttribute('data-color');
-          this.style.transform = 'scale(1.4)';
-          setTimeout(() => this.style.transform = 'scale(1)', 200);
-        });
-      });
+      document.body.style.background = scheme.bg;
+      document.querySelector('.url-text').style.color = scheme.text;
+      
+      // Efeito visual ao clicar
+      const switcher = document.querySelector('.color-switcher');
+      switcher.style.transform = 'scale(1.1) rotate(180deg)';
+      setTimeout(() => {
+        switcher.style.transform = 'scale(1) rotate(360deg)';
+      }, 300);
     }
+
+    // Configurar o botão
+    document.querySelector('.color-switcher').addEventListener('click', switchBackgroundColor);
 
     // Criar flocos de neve
     function createSnowflakes() {
@@ -209,7 +222,8 @@
     window.onload = function() {
       createSnowflakes();
       animateUrlText();
-      setupColorPicker();
+      // Inicializa com a primeira cor de texto
+      document.querySelector('.url-text').style.color = colorSchemes[0].text;
     };
   </script>
 </body>
