@@ -40,7 +40,7 @@
 
     .content {
       position: absolute;
-      left: 10px; /* Posicionado bem à esquerda */
+      left: 10px;
       top: 50%;
       transform: translateY(-50%);
       z-index: 1;
@@ -63,19 +63,20 @@
 
     .color-picker {
       position: absolute;
-      bottom: 20px;
+      bottom: 25%; /* Ajustado para 25% de baixo para cima (subiu 20%) */
       right: 20px;
       z-index: 10;
       display: flex;
       gap: 8px;
-      background: rgba(0, 0, 0, 0.5);
-      padding: 8px;
+      background: rgba(0, 0, 0, 0.7);
+      padding: 10px;
       border-radius: 15px;
+      box-shadow: 0 0 10px rgba(0,0,0,0.5);
     }
 
     .color-option {
-      width: 15px; /* Reduzido 50% */
-      height: 15px; /* Reduzido 50% */
+      width: 15px;
+      height: 15px;
       border-radius: 50%;
       cursor: pointer;
       border: 1px solid white;
@@ -107,11 +108,11 @@
   <div class="stars"></div>
   
   <div class="color-picker">
-    <div class="color-option" data-color="#36452f" title="Verde musgo"></div>
-    <div class="color-option" data-color="#76a870" title="Verde claro"></div>
-    <div class="color-option" data-color="#bdc82b" title="Verde limão"></div>
-    <div class="color-option" data-color="#ddf0d5" title="Verde pastel"></div>
-    <div class="color-option" data-color="#161616" title="Preto"></div>
+    <div class="color-option" style="background: #36452f;" title="Verde musgo" data-color="#36452f"></div>
+    <div class="color-option" style="background: #76a870;" title="Verde claro" data-color="#76a870"></div>
+    <div class="color-option" style="background: #bdc82b;" title="Verde limão" data-color="#bdc82b"></div>
+    <div class="color-option" style="background: #ddf0d5;" title="Verde pastel" data-color="#ddf0d5"></div>
+    <div class="color-option" style="background: #161616;" title="Preto" data-color="#161616"></div>
   </div>
   
   <div class="content">
