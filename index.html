@@ -2,227 +2,204 @@
 <html lang="pt-BR">
 <head>
   <meta charset="UTF-8">
-  <title>Painel ZayronFX</title>
+  <title>ZayronFX - Futurista</title>
   <style>
-    /* RESET */
-    * { margin: 0; padding: 0; box-sizing: border-box; }
-    body {
+    /* ===== RESET ===== */
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    html, body {
+      width: 100%;
+      height: 100%;
       font-family: 'Segoe UI', sans-serif;
-      background: #0b0f19;
+      overflow-x: hidden;
       color: #fff;
-      min-height: 100vh;
-      display: flex;
-      flex-direction: column;
-      justify-content: space-between;
     }
 
-    /* NEVE */
-    .snow {
-      position: fixed;
-      top: 0; left: 0;
-      width: 100%; height: 100%;
-      pointer-events: none;
-      z-index: 0;
-      overflow: hidden;
-    }
-    .snow span {
-      position: absolute;
-      top: -10px;
-      width: 6px; height: 6px;
-      background: #fff;
-      border-radius: 50%;
-      opacity: 0.8;
-      animation: fall linear infinite;
-    }
-    @keyframes fall {
-      to {
-        transform: translateY(110vh);
-        opacity: 0;
-      }
+    /* ===== FUNDO LIQUIDO ===== */
+    body {
+      background: linear-gradient(-45deg, #ff4ecd, #6a00ff, #00eaff, #ff9a00);
+      background-size: 400% 400%;
+      animation: gradient 12s ease infinite;
     }
 
-    /* CONTAINER */
+    @keyframes gradient {
+      0% { background-position: 0% 50%; }
+      50% { background-position: 100% 50%; }
+      100% { background-position: 0% 50%; }
+    }
+
+    /* ===== CONTAINER ===== */
     .container {
       display: flex;
-      gap: 30px;
+      justify-content: space-between;
+      align-items: flex-start;
       max-width: 1400px;
-      width: 100%;
-      margin: 40px auto;
-      z-index: 1;
-      position: relative;
+      margin: 50px auto;
+      padding: 20px;
+      gap: 40px;
     }
 
-    /* CARD PERFIL */
+    /* ===== CARD PERFIL ===== */
     .profile-card {
       flex: 1;
-      padding: 30px;
+      max-width: 350px;
+      padding: 40px;
       border-radius: 20px;
-      background: rgba(255, 255, 255, 0.08);
+      background: rgba(255, 255, 255, 0.1);
       backdrop-filter: blur(20px);
-      border: 1px solid rgba(255, 255, 255, 0.2);
-      box-shadow: 0 0 25px rgba(0, 255, 255, 0.2);
+      border: 1px solid rgba(255, 255, 255, 0.25);
+      box-shadow: 0 0 25px rgba(0, 0, 0, 0.3);
       text-align: center;
-      transition: 0.3s ease;
+      transition: transform 0.3s ease, box-shadow 0.3s ease;
     }
+
     .profile-card:hover {
-      transform: scale(1.02);
-      box-shadow: 0 0 40px rgba(0, 255, 255, 0.4);
+      transform: scale(1.05);
+      box-shadow: 0 0 35px rgba(255, 255, 255, 0.6);
     }
+
     .profile-card img {
-      width: 150px; height: 150px;
+      width: 180px;
+      height: 180px;
       border-radius: 50%;
       object-fit: cover;
-      border: 3px solid rgba(0,255,255,0.7);
-      box-shadow: 0 0 15px rgba(0,255,255,0.6);
       margin-bottom: 20px;
+      border: 3px solid rgba(255,255,255,0.6);
+      box-shadow: 0 0 20px rgba(255,255,255,0.5);
     }
+
     .profile-card h2 {
-      font-size: 28px;
+      font-size: 30px;
       margin-bottom: 8px;
-      background: linear-gradient(90deg,#00eaff,#ff00ff);
-      -webkit-background-clip: text;
-      -webkit-text-fill-color: transparent;
+      color: #fff;
+      text-shadow: 0 0 15px rgba(0, 234, 255, 0.8);
     }
+
     .profile-card p {
       font-size: 18px;
-      opacity: 0.85;
-      margin-bottom: 15px;
+      margin-bottom: 20px;
+      opacity: 0.9;
     }
+
     .topics {
       text-align: left;
       margin-top: 20px;
-      padding-left: 15px;
-    }
-    .topics h3 {
       font-size: 18px;
-      margin-bottom: 10px;
-      color: #00eaff;
-    }
-    .topics ul {
-      list-style: none;
-      font-size: 16px;
-      line-height: 1.6;
-      opacity: 0.9;
-    }
-    .topics ul li::before {
-      content: "➤ ";
-      color: #00eaff;
+      line-height: 1.8;
     }
 
-    /* GALERIA */
+    .topics h3 {
+      font-size: 20px;
+      margin-bottom: 10px;
+      color: #00eaff;
+      text-shadow: 0 0 10px #00eaff;
+    }
+
+    /* ===== GALERIA ===== */
     .gallery {
-      flex: 3;
+      flex: 2;
       display: grid;
-      grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
+      grid-template-columns: repeat(2, 1fr);
       gap: 20px;
     }
+
     .gallery-item {
       position: relative;
       border-radius: 15px;
       overflow: hidden;
-      background: rgba(255, 255, 255, 0.05);
-      backdrop-filter: blur(15px);
-      border: 1px solid rgba(255, 255, 255, 0.15);
-      transition: transform 0.3s ease, box-shadow 0.3s ease;
+      background: rgba(255, 255, 255, 0.08);
+      backdrop-filter: blur(12px);
+      border: 1px solid rgba(255, 255, 255, 0.25);
+      transition: transform 0.4s ease, box-shadow 0.4s ease;
       cursor: pointer;
     }
+
     .gallery-item img {
       width: 100%;
-      height: 180px;
+      height: 100%;
       object-fit: cover;
-      transition: transform 0.3s ease;
-      display: block;
+      transition: transform 0.4s ease;
     }
+
     .gallery-item:hover {
-      transform: translateY(-5px);
-      box-shadow: 0 0 20px rgba(0, 255, 255, 0.4);
-    }
-    .gallery-item:hover img {
       transform: scale(1.05);
+      box-shadow: 0 0 25px rgba(255, 255, 255, 0.5);
     }
+
+    .gallery-item:hover img {
+      transform: scale(1.1);
+    }
+
     .gallery-title {
       position: absolute;
       bottom: 10px;
       left: 50%;
       transform: translateX(-50%);
-      background: rgba(0, 0, 0, 0.6);
+      background: rgba(0, 0, 0, 0.5);
       padding: 6px 12px;
       border-radius: 8px;
-      font-size: 14px;
-      color: #00eaff;
-      text-shadow: 0 0 10px #00eaff;
-    }
-
-    /* POPUP */
-    .popup {
-      position: fixed;
-      inset: 0;
-      background: rgba(0,0,0,0.8);
-      backdrop-filter: blur(15px);
-      display: none;
-      align-items: center;
-      justify-content: center;
-      z-index: 100;
-    }
-    .popup-content {
-      position: relative;
-      max-width: 80%;
-      border-radius: 15px;
-      overflow: hidden;
-      box-shadow: 0 0 40px rgba(0,255,255,0.6);
-      border: 2px solid rgba(0,255,255,0.4);
-    }
-    .popup-content img {
-      width: 100%;
-      height: auto;
-      display: block;
-    }
-    .close-btn {
-      position: absolute;
-      top: 10px;
-      right: 15px;
-      font-size: 28px;
-      cursor: pointer;
+      font-size: 16px;
       color: #fff;
       text-shadow: 0 0 10px #00eaff;
     }
-    .close-btn:hover { color: #00eaff; }
 
-    /* RODAPÉ */
+    /* ===== POPUP ===== */
+    .popup {
+      display: none;
+      position: fixed;
+      top: 0; left: 0;
+      width: 100%; height: 100%;
+      background: rgba(0,0,0,0.8);
+      justify-content: center;
+      align-items: center;
+      z-index: 100;
+    }
+
+    .popup img {
+      max-width: 90%;
+      max-height: 80%;
+      border-radius: 15px;
+      box-shadow: 0 0 25px rgba(255,255,255,0.7);
+    }
+
+    .popup.active {
+      display: flex;
+    }
+
+    /* ===== RODAPÉ ===== */
     footer {
       text-align: center;
-      padding: 15px;
-      font-size: 14px;
-      opacity: 0.85;
-      background: rgba(255,255,255,0.05);
+      padding: 20px;
+      font-size: 16px;
+      background: rgba(0, 0, 0, 0.3);
       backdrop-filter: blur(10px);
-      border-top: 1px solid rgba(255,255,255,0.1);
+      border-top: 1px solid rgba(255, 255, 255, 0.2);
+      margin-top: 40px;
     }
   </style>
 </head>
 <body>
-  <!-- NEVE -->
-  <div class="snow"></div>
 
-  <!-- CONTEÚDO -->
   <div class="container">
-    <!-- Perfil -->
+    <!-- PERFIL -->
     <div class="profile-card">
       <img src="https://xatimg.com/image/zNtKHn6KSCLh.png" alt="Zayron Foto">
       <h2>Zayron</h2>
       <p>@EuSouZayron</p>
       <div class="topics">
-        <h3>Em tópicos:</h3>
-        <ul>
-          <li>FUNDOS</li>
-          <li>PCBACKS</li>
-          <li>BACKGROUNDS</li>
-          <li>XATSPACE</li>
-        </ul>
+        <h3>Vendo/Sell</h3>
+        <p>FUNDOS</p>
+        <p>PCBACKS</p>
+        <p>BACKGROUNDS</p>
+        <p>XATSPACE</p>
       </div>
     </div>
 
-    <!-- Galeria -->
+    <!-- GALERIA -->
     <div class="gallery">
       <div class="gallery-item">
         <img src="https://xatimg.com/image/UZa2Jwcoc5iP.png" alt="Doação">
@@ -253,43 +230,32 @@
 
   <!-- POPUP -->
   <div class="popup" id="popup">
-    <div class="popup-content">
-      <span class="close-btn" id="closeBtn">&times;</span>
-      <img id="popupImg" src="" alt="Imagem Ampliada">
-    </div>
+    <img id="popup-img" src="">
   </div>
 
-  <!-- Rodapé -->
+  <!-- RODAPÉ -->
   <footer>
     Feito com amor 🤍 Zayron - 2025
   </footer>
 
   <script>
-    // POPUP
-    const galleryImgs = document.querySelectorAll(".gallery-item img");
-    const popup = document.getElementById("popup");
-    const popupImg = document.getElementById("popupImg");
-    const closeBtn = document.getElementById("closeBtn");
+    // POPUP SCRIPT
+    const items = document.querySelectorAll('.gallery-item img');
+    const popup = document.getElementById('popup');
+    const popupImg = document.getElementById('popup-img');
 
-    galleryImgs.forEach(img => {
-      img.addEventListener("click", () => {
-        popup.style.display = "flex";
+    items.forEach(img => {
+      img.addEventListener('click', () => {
+        popup.classList.add('active');
         popupImg.src = img.src;
       });
     });
-    closeBtn.addEventListener("click", () => popup.style.display = "none");
-    popup.addEventListener("click", e => { if (e.target === popup) popup.style.display = "none"; });
 
-    // NEVE GERADA
-    const snowContainer = document.querySelector('.snow');
-    for (let i = 0; i < 50; i++) {
-      const snowflake = document.createElement('span');
-      snowflake.style.left = Math.random() * 100 + 'vw';
-      snowflake.style.animationDuration = 5 + Math.random() * 5 + 's';
-      snowflake.style.opacity = Math.random();
-      snowflake.style.fontSize = Math.random() * 5 + 5 + 'px';
-      snowContainer.appendChild(snowflake);
-    }
+    popup.addEventListener('click', () => {
+      popup.classList.remove('active');
+      popupImg.src = "";
+    });
   </script>
+
 </body>
 </html>
