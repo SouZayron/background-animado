@@ -19,17 +19,10 @@
       color: #fff;
     }
 
-    /* ===== FUNDO LIQUIDO ===== */
+    /* ===== FUNDO COM IMAGEM ===== */
     body {
-      background: linear-gradient(-45deg, #ff4ecd, #6a00ff, #00eaff, #ff9a00);
-      background-size: 400% 400%;
-      animation: gradient 12s ease infinite;
-    }
-
-    @keyframes gradient {
-      0% { background-position: 0% 50%; }
-      50% { background-position: 100% 50%; }
-      100% { background-position: 0% 50%; }
+      background: url("https://xatimg.com/image/IwODyuys4rnc.jpg") no-repeat center center fixed;
+      background-size: cover;
     }
 
     /* ===== CONTAINER ===== */
@@ -43,16 +36,17 @@
       gap: 40px;
     }
 
-    /* ===== CARD PERFIL ===== */
+    /* ===== CARD PERFIL (GLASSMORPHISM) ===== */
     .profile-card {
       flex: 1;
       max-width: 350px;
       padding: 40px;
       border-radius: 20px;
-      background: rgba(255, 255, 255, 0.1);
-      backdrop-filter: blur(20px);
+      background: rgba(255, 255, 255, 0.12); /* transparência */
+      backdrop-filter: blur(20px) saturate(150%);
+      -webkit-backdrop-filter: blur(20px) saturate(150%);
       border: 1px solid rgba(255, 255, 255, 0.25);
-      box-shadow: 0 0 25px rgba(0, 0, 0, 0.3);
+      box-shadow: 0 8px 32px rgba(0, 0, 0, 0.4);
       text-align: center;
       transition: transform 0.3s ease, box-shadow 0.3s ease;
     }
@@ -191,7 +185,7 @@
       <h2>Zayron</h2>
       <p>@EuSouZayron</p>
       <div class="topics">
-        <h3>Vendo/Sell</h3>
+        <h3>Em tópicos:</h3>
         <p>FUNDOS</p>
         <p>PCBACKS</p>
         <p>BACKGROUNDS</p>
