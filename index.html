@@ -24,13 +24,11 @@
       position: fixed; inset: 0;
       display: flex; align-items: center; justify-content: center;
       transform-style: preserve-3d; will-change: transform;
-      --rx: 0deg; --ry: 0deg; --tx: 0px;
-      transform: rotateX(var(--rx)) rotateY(var(--ry)) translateX(var(--tx));
-      transition: transform 0.2s ease-out;
+      --rx: 0deg; --ry: 0deg;
+      transform: rotateX(var(--rx)) rotateY(var(--ry));
+      transition: transform 0.3s ease-out;
       z-index: 0;
     }
-    .gif-wrap.swaying { animation: sway 3s ease-in-out infinite; }
-    @keyframes sway { 0%{--tx:-8px} 50%{--tx:8px} 100%{--tx:-8px} }
 
     .gif-wrap img {
       width: 100%; height: 100%;
@@ -45,7 +43,7 @@
     }
     #logoBtn {
       background: transparent; border: none; cursor: pointer;
-      width: 140px; transition: transform 0.15s;
+      width: 120px; transition: transform 0.15s;
     }
     #logoBtn:active { transform: scale(0.95); }
     #logoBtn img { width: 100%; display: block; }
@@ -67,30 +65,32 @@
 
   <footer>
     <button id="logoBtn">
-      <img src="https://xatimg.com/image/CEOwVQMbTHld.png" alt="Logo">
+      <img src="https://xatimg.com/image/ZDNGWssAr9Yg.png" alt="Logo">
     </button>
   </footer>
 
   <script>
-    /* Tilt + sway */
+    /* Tilt suave pelo movimento do mouse */
     (function(){
       const wrap = document.getElementById('gifWrap');
-      let inside=false, timeout;
+      let inside = false;
+
       function move(e){
-        const cx = window.innerWidth/2, cy = window.innerHeight/2;
+        const cx = window.innerWidth/2;
+        const cy = window.innerHeight/2;
         const x = (e.clientX - cx) / (window.innerWidth/2);
         const y = (e.clientY - cy) / (window.innerHeight/2);
-        wrap.style.setProperty('--ry',(x*6)+'deg');
-        wrap.style.setProperty('--rx',(-y*5)+'deg');
-        if(!wrap.classList.contains('swaying')) wrap.classList.add('swaying');
-        clearTimeout(timeout);
-        timeout=setTimeout(()=>{if(!inside) wrap.classList.remove('swaying');},800);
+        wrap.style.setProperty('--ry', (x*5)+'deg'); // max 5º
+        wrap.style.setProperty('--rx', (-y*3)+'deg'); // max 3º
       }
-      wrap.addEventListener('mouseenter',()=>{inside=true;document.addEventListener('mousemove',move);});
-      wrap.addEventListener('mouseleave',()=>{inside=false;document.removeEventListener('mousemove',move);
-        wrap.style.setProperty('--rx','0deg'); wrap.style.setProperty('--ry','0deg');
-        setTimeout(()=>{if(!inside) wrap.classList.remove('swaying');},600);
-      });
+
+      function reset(){
+        wrap.style.setProperty('--rx','0deg');
+        wrap.style.setProperty('--ry','0deg');
+      }
+
+      wrap.addEventListener('mouseenter', ()=>{ inside = true; document.addEventListener('mousemove', move); });
+      wrap.addEventListener('mouseleave', ()=>{ inside = false; document.removeEventListener('mousemove', move); reset(); });
     })();
 
     /* Estrelas */
