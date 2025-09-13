@@ -1,126 +1,452 @@
-<!DOCTYPE html>
+<!doctype html>
 <html lang="pt-BR">
 <head>
-  <meta charset="UTF-8">
-  <title>GIF Fullscreen</title>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>REVEN — 4D Futurista com Camada PNG</title>
+  <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@900&display=swap" rel="stylesheet">
   <style>
-    * { margin: 0; padding: 0; box-sizing: border-box; }
-    html, body {
-      width: 100vw; height: 100vh;
-      overflow: hidden; background: #000;
+    html,body{
+      height:100%;
+      margin:0;
+      background:#000;
+      font-family: 'Orbitron', system-ui, sans-serif;
+      overflow:hidden;
     }
 
-    /* overlay */
-    body::before {
-      content: "";
-      position: fixed; inset: 0;
-      background: radial-gradient(circle at center, rgba(255,0,0,0.08), transparent 70%),
-                  linear-gradient(180deg, rgba(0,0,0,0.3), rgba(0,0,0,0.7));
-      z-index: 1; pointer-events: none;
-    }
-
-    /* GIF ocupa tela toda */
-    .gif-wrap {
-      position: fixed; inset: 0;
-      display: flex; align-items: center; justify-content: center;
-      transform-style: preserve-3d; will-change: transform;
-      --rx: 0deg; --ry: 0deg;
-      transform: rotateX(var(--rx)) rotateY(var(--ry));
+    /* Fundo fixo */
+    .bg{
+      position:fixed;
+      inset:0;
+      background-image: url('https://xatimg.com/image/nQNo0afhwaBN.png');
+      background-size:cover;
+      background-position:center;
+      z-index:1;
       transition: transform 0.3s ease-out;
-      z-index: 0;
     }
 
-    .gif-wrap img {
-      width: 100%; height: 100%;
-      object-fit: cover; pointer-events: none;
+    /* Camada PNG atrás do texto */
+    .mid{
+      position:fixed;
+      inset:0;
+      background-image: url('https://xatimg.com/image/Jya0F2PlPJ29.png');
+      background-repeat:no-repeat;
+      background-position:center;
+      background-size:contain;
+      z-index:2;
+      pointer-events:none;
+      transition: transform 0.3s ease-out;
     }
 
-    /* logo */
-    footer {
-      position: fixed; bottom: 20px; left: 50%;
-      transform: translateX(-50%);
-      z-index: 3;
+    /* Camada PNG na frente do texto */
+    .front{
+      position:fixed;
+      inset:0;
+      background-image: url('https://xatimg.com/image/Jya0F2PlPJ29.png');
+      background-repeat:no-repeat;
+      background-position:center;
+      background-size:contain;
+      z-index:5;
+      pointer-events:none;
+      transition: transform 0.3s ease-out;
     }
-    #logoBtn {
-      background: transparent; border: none; cursor: pointer;
-      width: 120px; transition: transform 0.15s;
-    }
-    #logoBtn:active { transform: scale(0.95); }
-    #logoBtn img { width: 100%; display: block; }
 
-    /* canvas partículas */
-    canvas#particles {
-      position: fixed; inset: 0;
-      width: 100%; height: 100%;
-      z-index: 2; pointer-events: none;
+    .overlay{
+      position:fixed;
+      inset:0;
+      background: linear-gradient(rgba(0,0,0,0.55), rgba(0,0,0,0.55));
+      z-index:3;
+      pointer-events:none;
+    }
+
+    .wrap{
+      position:relative;
+      z-index:4;
+      height:100vh;
+      display:flex;
+      align-items:center;
+      justify-content:center;
+      flex-direction: column;
+    }
+
+    .reven{
+      position: relative;
+      font-weight:900;
+      font-size:13.5vw;
+      line-height:0.9;
+      text-transform:uppercase;
+      background-image: url('https://xatimg.com/image/Jya0F2PlPJ29.png');
+      background-size: cover;
+      background-position: center;
+      -webkit-background-clip: text;
+      background-clip: text;
+      color: transparent;
+      -webkit-text-fill-color: transparent;
+      -webkit-text-stroke: 3px #ff0000;
+
+      /* Glow vermelho futurista */
+      text-shadow:
+        0 0 12px rgba(255,0,0,0.8),
+        0 0 32px rgba(255,0,0,0.6),
+        0 0 64px rgba(255,0,0,0.4);
+
+      transition: transform 0.2s ease-out, background-position 0.2s ease-out;
+      user-select:none;
+    }
+
+    /* Número 1001013 abaixo do REVEN */
+    .reven-id {
+      position: absolute;
+      bottom: -40px;
+      left: 0;
+      font-size: 1.2vw;
+      color: #ffffff;
+      font-weight: bold;
+      font-family: Arial, sans-serif;
+      text-shadow:
+        0 0 10px rgba(0, 0, 0, 0.9),
+        0 0 20px rgba(0, 0, 0, 0.8),
+        0 0 30px rgba(0, 0, 0, 0.7),
+        0 0 40px rgba(0, 0, 0, 0.6);
+      opacity: 0.9;
+      transition: all 0.3s ease;
+      pointer-events: auto;
+      cursor: pointer;
+      z-index: 6;
+      letter-spacing: 1px;
+    }
+
+    /* Efeito de fogos ao passar o mouse */
+    .reven-id:hover {
+      color: #ffffff;
+      text-shadow:
+        0 0 15px rgba(0, 0, 0, 0.9),
+        0 0 30px rgba(0, 0, 0, 0.8),
+        0 0 45px rgba(0, 0, 0, 0.7);
+      transform: scale(1.05);
+    }
+
+    /* Fogos de artifício (rojoes) para tela inteira */
+    .firework {
+      position: fixed;
+      width: 6px;
+      height: 6px;
+      background: #ff0000;
+      border-radius: 50%;
+      pointer-events: none;
+      z-index: 25;
+      animation: fireworkExplode 1.2s ease-out forwards;
+    }
+
+    .firework.black {
+      background: #000000;
+      box-shadow: 0 0 12px #000000;
+    }
+
+    @keyframes fireworkExplode {
+      0% {
+        transform: translate(0, 0) scale(1);
+        opacity: 1;
+      }
+      100% {
+        transform: translate(var(--fw-x), var(--fw-y)) scale(0.1);
+        opacity: 0;
+      }
+    }
+
+    /* Efeito de fio de glow percorrendo o texto */
+    .reven::after {
+      content: '';
+      position: absolute;
+      top: -6px;
+      left: -6px;
+      right: -6px;
+      bottom: -6px;
+      border: 2px solid #ff0000;
+      border-radius: 10px;
+      opacity: 0;
+      box-shadow: 
+        0 0 15px #ff0000,
+        0 0 30px #ff0000,
+        0 0 45px #ff0000;
+      animation: glowTrail 3s ease-in-out infinite;
+      z-index: 10;
+      pointer-events: none;
+    }
+
+    @keyframes glowTrail {
+      0% {
+        opacity: 0;
+        clip-path: polygon(0 0, 0 0, 0 100%, 0 100%);
+      }
+      50% {
+        opacity: 1;
+        clip-path: polygon(0 0, 100% 0, 100% 100%, 0 100%);
+      }
+      100% {
+        opacity: 0;
+        clip-path: polygon(100% 0, 100% 0, 100% 100%, 100% 100%);
+      }
+    }
+
+    /* 4D extrusão fake */
+    .reven::before{
+      content: attr(data-text);
+      position:absolute;
+      top:6px;
+      left:6px;
+      z-index:-1;
+      color:rgba(0,0,0,0.85);
+      filter: blur(1px);
+    }
+
+    @media (max-width:1000px){
+      .reven{ 
+        font-size: 18vw; 
+        -webkit-text-stroke:2px; 
+      }
+      .reven::after {
+        top: -4px;
+        left: -4px;
+        right: -4px;
+        bottom: -4px;
+        border-width: 1.5px;
+      }
+      .reven-id {
+        font-size: 2vw;
+        bottom: -30px;
+      }
+    }
+
+    /* Rodapé */
+    footer{
+      position:fixed;
+      bottom:20px;
+      left:50%;
+      transform:translateX(-50%);
+      text-align:center;
+      z-index:10;
+      color:#fff;
+      font-size:14px;
+      font-family: Arial, sans-serif;
+    }
+    footer img{
+      display:block;
+      margin:0 auto 8px;
+      max-width:140px;
+      cursor:pointer;
+      transition: transform 0.3s ease;
+    }
+    footer img:hover{
+      transform: scale(1.1);
+    }
+
+    /* Estrelas (substituindo as bolinhas) */
+    .star{
+      position:fixed;
+      width:16px;
+      height:16px;
+      background:url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path fill="yellow" d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/></svg>') no-repeat center/contain;
+      pointer-events:none;
+      z-index:20;
+      animation: starExplode 1.2s ease-out forwards;
+    }
+
+    @keyframes starExplode{
+      0% {
+        transform: translate(0, 0) scale(1) rotate(0deg);
+        opacity: 1;
+      }
+      100%{
+        transform: translate(var(--x), var(--y)) scale(0.1) rotate(360deg);
+        opacity: 0;
+      }
+    }
+
+    /* Efeito de brilho pulsante adicional */
+    @keyframes pulse {
+      0%, 100% { opacity: 0.7; }
+      50% { opacity: 1; }
+    }
+
+    .reven {
+      animation: pulse 2s ease-in-out infinite;
     }
   </style>
 </head>
 <body>
-  <canvas id="particles"></canvas>
+  <div class="bg" aria-hidden="true"></div>
+  <div class="mid" aria-hidden="true"></div>
+  <div class="overlay" aria-hidden="true"></div>
 
-  <div class="gif-wrap" id="gifWrap">
-    <img src="https://xatimg.com/image/epEK4CZvcecV.gif" alt="GIF">
-  </div>
+  <main class="page-box">
+    <div class="wrap">
+      <h1 class="reven" data-text="REVEN">REVEN
+        <span class="reven-id" id="revenNumber">1001013</span>
+      </h1>
+    </div>
+  </main>
+
+  <!-- PNG duplicada na frente -->
+  <div class="front" aria-hidden="true"></div>
+
+  <!-- Música (src definida inicialmente - autoplay MUTED para contornar bloqueios) -->
+  <audio id="bgMusic" autoplay loop muted></audio>
 
   <footer>
-    <button id="logoBtn">
-      <img src="https://xatimg.com/image/ZDNGWssAr9Yg.png" alt="Logo">
-    </button>
+    <img id="footerLogo" src="https://xatimg.com/image/jUatPNPvTGj7.png" alt="Logo">
+    Feito por Zayron - 2025
   </footer>
 
   <script>
-    /* Tilt suave pelo movimento do mouse */
-    (function(){
-      const wrap = document.getElementById('gifWrap');
-      let inside = false;
+    const DRIVE_URL = 'https://docs.google.com/uc?export=download&id=19Q2-v9XilZsjkM6dXYFk_7mpToQ9feFF';
 
-      function move(e){
-        const cx = window.innerWidth/2;
-        const cy = window.innerHeight/2;
-        const x = (e.clientX - cx) / (window.innerWidth/2);
-        const y = (e.clientY - cy) / (window.innerHeight/2);
-        wrap.style.setProperty('--ry', (x*5)+'deg'); // max 5º
-        wrap.style.setProperty('--rx', (-y*3)+'deg'); // max 3º
+    const text = document.querySelector('.reven');
+    const bg = document.querySelector('.bg');
+    const mid = document.querySelector('.mid');
+    const front = document.querySelector('.front');
+    const footerLogo = document.getElementById('footerLogo');
+    const revenNumber = document.getElementById('revenNumber');
+    const music = document.getElementById('bgMusic');
+
+    // define src inicial (autoplay mutado deve rodar em vários navegadores)
+    music.src = DRIVE_URL;
+
+    // Efeito parallax
+    document.addEventListener('mousemove', (e) => {
+      const { innerWidth, innerHeight } = window;
+      const x = (e.clientX / innerWidth - 0.5);
+      const y = (e.clientY / innerHeight - 0.5);
+
+      text.style.transform = `translate(${x * -20}px, ${y * -20}px)`;
+      text.style.backgroundPosition = `${50 + x * 10}% ${50 + y * 10}%`;
+
+      mid.style.transform = `translate(${x * -30}px, ${y * -30}px)`;
+      front.style.transform = `translate(${x * -30}px, ${y * -30}px)`;
+      bg.style.transform = `translate(${x * 10}px, ${y * 10}px)`;
+    });
+
+    // Explosão de estrelas apenas no clique do logo
+    footerLogo.addEventListener('click', (e) => {
+      const rect = footerLogo.getBoundingClientRect();
+      const centerX = rect.left + rect.width / 2;
+      const centerY = rect.top + rect.height / 2;
+
+      for(let i=0; i<25; i++){ // Aumentei para 25 estrelas
+        const star = document.createElement('div');
+        star.className = 'star';
+        document.body.appendChild(star);
+
+        const angle = Math.random() * 2 * Math.PI;
+        const distance = 80 + Math.random() * 80; // Aumentei a distância
+        const x = Math.cos(angle) * distance + 'px';
+        const y = Math.sin(angle) * distance + 'px';
+
+        // Tamanho aleatório para as estrelas
+        const size = 8 + Math.random() * 16;
+        star.style.width = size + 'px';
+        star.style.height = size + 'px';
+
+        // Rotação aleatória inicial
+        star.style.transform = `rotate(${Math.random() * 360}deg)`;
+
+        star.style.left = centerX + 'px';
+        star.style.top = centerY + 'px';
+        star.style.setProperty('--x', x);
+        star.style.setProperty('--y', y);
+
+        // Duração aleatória da animação
+        star.style.animationDuration = (0.8 + Math.random() * 0.8) + 's';
+
+        setTimeout(() => {
+          if (star.parentNode) {
+            star.parentNode.removeChild(star);
+          }
+        }, 2000);
       }
+    });
 
-      function reset(){
-        wrap.style.setProperty('--rx','0deg');
-        wrap.style.setProperty('--ry','0deg');
-      }
-
-      wrap.addEventListener('mouseenter', ()=>{ inside = true; document.addEventListener('mousemove', move); });
-      wrap.addEventListener('mouseleave', ()=>{ inside = false; document.removeEventListener('mousemove', move); reset(); });
-    })();
-
-    /* Estrelas */
-    (function(){
-      const canvas=document.getElementById('particles'), ctx=canvas.getContext('2d');
-      let W,H,DPR=window.devicePixelRatio||1;
-      function resize(){W=innerWidth;H=innerHeight;canvas.width=W*DPR;canvas.height=H*DPR;ctx.setTransform(DPR,0,0,DPR,0,0);}
-      resize();addEventListener('resize',resize);
-
-      function star(x,y,r,rot){
-        ctx.save();ctx.translate(x,y);ctx.rotate(rot);
-        ctx.beginPath();
-        for(let i=0;i<5;i++){
-          ctx.lineTo(Math.cos((18+72*i)*Math.PI/180)*r,-Math.sin((18+72*i)*Math.PI/180)*r);
-          ctx.lineTo(Math.cos((54+72*i)*Math.PI/180)*(r*0.5),-Math.sin((54+72*i)*Math.PI/180)*(r*0.5));
+    // Efeito de fogos na tela inteira ao passar o mouse no número
+    revenNumber.addEventListener('mouseenter', (e) => {
+      // Criar fogos de artifício por toda a tela
+      for(let i=0; i<50; i++){ // Mais fogos para cobrir a tela inteira
+        const firework = document.createElement('div');
+        firework.className = 'firework';
+        // Alternar entre fogos vermelhos e pretos
+        if (i % 2 === 0) {
+          firework.classList.add('black');
         }
-        ctx.closePath();ctx.fillStyle='gold';ctx.fill();ctx.restore();
+        document.body.appendChild(firework);
+
+        // Posição aleatória na tela inteira
+        const screenX = Math.random() * window.innerWidth;
+        const screenY = Math.random() * window.innerHeight;
+        
+        // Direção aleatória para a explosão
+        const angle = Math.random() * 2 * Math.PI;
+        const distance = 50 + Math.random() * 100; // Maior distância
+        const x = Math.cos(angle) * distance + 'px';
+        const y = Math.sin(angle) * distance + 'px';
+
+        firework.style.left = screenX + 'px';
+        firework.style.top = screenY + 'px';
+        firework.style.setProperty('--fw-x', x);
+        firework.style.setProperty('--fw-y', y);
+
+        // Tamanho aleatório
+        const size = 4 + Math.random() * 8;
+        firework.style.width = size + 'px';
+        firework.style.height = size + 'px';
+
+        // Duração aleatória
+        firework.style.animationDuration = (0.8 + Math.random() * 0.8) + 's';
+
+        setTimeout(() => {
+          if (firework.parentNode) {
+            firework.parentNode.removeChild(firework);
+          }
+        }, 1500);
       }
-      let parts=[];
-      function spawn(x,y){
-        for(let i=0;i<28;i++){
-          const spd=3+Math.random()*6,ang=Math.random()*Math.PI*2;
-          parts.push({x,y,vx:Math.cos(ang)*spd,vy:Math.sin(ang)*spd,rot:Math.random()*6,vrot:(Math.random()-.5)*.2,life:60+Math.random()*60,age:0,size:6+Math.random()*10});
-        }
+    });
+
+    // Loga erros do elemento audio
+    music.addEventListener('error', () => {
+      console.error('Audio element error:', music.error);
+    });
+
+    // Função que tenta carregar via fetch (fallback) e reproduzir
+    async function fetchAndPlay(url) {
+      try {
+        const resp = await fetch(url);
+        if(!resp.ok) throw new Error('HTTP ' + resp.status);
+        const blob = await resp.blob();
+        const objectUrl = URL.createObjectURL(blob);
+        music.src = objectUrl;
+        await music.play();
+        return true;
+      } catch (err) {
+        console.error('Erro ao fazer fetch do áudio:', err);
+        return false;
       }
-      function update(){for(let i=parts.length-1;i>=0;i--){const p=parts[i];p.x+=p.vx;p.y+=p.vy;p.vy+=0.25;p.rot+=p.vrot;p.age++;if(p.age>p.life)parts.splice(i,1);}}
-      function draw(){ctx.clearRect(0,0,W,H);parts.forEach(p=>{ctx.globalAlpha=1-p.age/p.life;star(p.x,p.y,p.size,p.rot);});ctx.globalAlpha=1;}
-      (function loop(){update();draw();requestAnimationFrame(loop);})();
-      document.getElementById('logoBtn').addEventListener('click',e=>{spawn(e.clientX,e.clientY);});
-    })();
+    }
+
+    // Inicia a música automaticamente (sem controles visíveis)
+    window.addEventListener('load', async () => {
+      try {
+        // Tenta desmutar e tocar após um tempo
+        setTimeout(async () => {
+          if (music.muted) {
+            music.muted = false;
+            await music.play().catch(() => {
+              // Fallback se a reprodução direta falhar
+              fetchAndPlay(DRIVE_URL);
+            });
+          }
+        }, 1000);
+      } catch (err) {
+        console.error('Erro ao iniciar música:', err);
+      }
+    });
   </script>
 </body>
 </html>
