@@ -1,332 +1,212 @@
-<!DOCTYPE html>
+<!doctype html>
 <html lang="pt-BR">
 <head>
-  <meta charset="UTF-8">
-  <title>ZayronFX - Futurista</title>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>Página 1920x1080 — efeito 3D e explosão</title>
   <style>
-    /* ===== RESET ===== */
-    * {
-      margin: 0;
-      padding: 0;
-      box-sizing: border-box;
+    /* Página fixa 1920x1080, sem rolagem */
+    html,body{height:100%;margin:0;}
+    body{
+      background:#000;
+      display:flex;
+      align-items:center;
+      justify-content:center;
+      overflow:hidden; /* sem rolagem */
+      -webkit-font-smoothing:antialiased;
+      -moz-osx-font-smoothing:grayscale;
     }
 
-    html, body {
-      width: 100%;
-      height: 100%;
-      font-family: 'Segoe UI', sans-serif;
-      overflow-x: hidden;
-      color: #fff;
+    /* Canvas principal que tem exatamente 1920x1080 */
+    .stage{
+      width:1920px;
+      height:1080px;
+      position:relative;
+      box-shadow:0 20px 60px rgba(0,0,0,.8);
+      overflow:hidden;
+      border-radius:8px;
+      transform-origin:center center;
+      background:#000;
     }
 
-    /* ===== FUNDO COM IMAGEM + ESCURECIDO ===== */
-    body {
-      position: relative;
-      background: url("https://xatimg.com/image/IwODyuys4rnc.jpg") no-repeat center center fixed;
-      background-size: cover;
+    /* Overlay de brilho vermelho/black leve por cima da página */
+    .stage::before{
+      content:"";
+      position:absolute;inset:0;
+      pointer-events:none;
+      background: radial-gradient(60% 50% at 20% 30%, rgba(255,30,30,0.12), transparent 12%),
+                  linear-gradient(180deg, rgba(0,0,0,0.25), rgba(0,0,0,0.45));
+      mix-blend-mode:screen;
+      animation: subtle-pulse 6s ease-in-out infinite;
+    }
+    @keyframes subtle-pulse{
+      0%{opacity:1;}
+      50%{opacity:.85;}
+      100%{opacity:1;}
     }
 
-    body::before {
-      content: "";
-      position: absolute;
-      top: 0; left: 0;
-      width: 100%; height: 100%;
-      background: rgba(0,0,0,0.2); /* escurece 20% */
-      z-index: -1;
+    /* Area central com o GIF */
+    .hero{
+      position:absolute;inset:0;
+      display:flex;align-items:center;justify-content:center;
+      perspective:1400px; /* dá sensação 3D */
     }
 
-    /* ===== CONTAINER ===== */
-    .container {
-      display: flex;
-      justify-content: space-between;
-      align-items: flex-start;
-      max-width: 1400px;
-      margin: 50px auto;
-      padding: 20px;
-      gap: 40px;
+    .gif-wrap{
+      width:1100px; /* você pode ajustar */
+      height:620px;
+      display:block;
+      border-radius:18px;
+      overflow:hidden;
+      transform-style:preserve-3d;
+      transition:transform 400ms cubic-bezier(.2,.9,.25,1), box-shadow 300ms;
+      will-change:transform;
+      box-shadow: 0 30px 80px rgba(0,0,0,0.7), inset 0 1px 0 rgba(255,255,255,0.02);
+      cursor:grab;
+      background: linear-gradient(180deg, rgba(0,0,0,0.25), rgba(0,0,0,0.45));
+      display:flex;align-items:center;justify-content:center;
     }
 
-    /* ===== CARD PERFIL (GLASSMORPHISM) ===== */
-    .profile-card {
-      flex: 1;
-      max-width: 350px;
-      padding: 40px;
-      border-radius: 20px;
-      background: rgba(255, 255, 255, 0.12);
-      backdrop-filter: blur(20px) saturate(150%);
-      -webkit-backdrop-filter: blur(20px) saturate(150%);
-      border: 1px solid rgba(255, 255, 255, 0.25);
-      box-shadow: 0 8px 32px rgba(0, 0, 0, 0.4);
-      text-align: center;
-      transition: transform 0.3s ease, box-shadow 0.3s ease;
+    .gif-wrap:active{cursor:grabbing}
+
+    .gif-wrap img{
+      width:100%;height:100%;object-fit:cover;display:block;transform:translateZ(30px);
+      pointer-events:none;
     }
 
-    .profile-card:hover {
-      transform: scale(1.05);
-      box-shadow: 0 0 35px rgba(255, 255, 255, 0.6);
+    /* ao passar o mouse: leve oscilação esquerda-direita (3D-like) */
+    .gif-wrap.hover-animate{
+      animation: sway 2.8s ease-in-out infinite;
+    }
+    @keyframes sway{
+      0%{transform:rotateY(-3deg) translateX(-4px);} 
+      25%{transform:rotateY(2deg) translateX(3px);} 
+      50%{transform:rotateY(0deg) translateX(0);} 
+      75%{transform:rotateY(2deg) translateX(3px);} 
+      100%{transform:rotateY(-3deg) translateX(-4px);} 
     }
 
-    .profile-card img {
-      width: 180px;
-      height: 180px;
-      border-radius: 50%;
-      object-fit: cover;
-      margin-bottom: 20px;
-      border: 3px solid rgba(255,255,255,0.6);
-      box-shadow: 0 0 20px rgba(255,255,255,0.5);
+    /* Rodapé com logo */
+    footer{
+      position:absolute;left:0;right:0;bottom:18px;display:flex;justify-content:center;pointer-events:none;
+    }
+    .logo-btn{
+      pointer-events:auto; /* ativa clique */
+      user-select:none;
+      display:inline-block;
+      width:120px;height:40px; border-radius:8px;
+      background:transparent; border:0; padding:6px; cursor:pointer;
+      transition:transform .18s ease;
+    }
+    .logo-btn img{width:100%;height:100%;object-fit:contain;display:block;}
+    .logo-btn:active{transform:scale(.95)}
+
+    /* Canvas de partículas ocupa todo o stage */
+    #particles{
+      position:absolute;inset:0;pointer-events:none;z-index:40;
     }
 
-    .profile-card h2 {
-      font-size: 30px;
-      margin-bottom: 8px;
-      color: #fff;
-      text-shadow: 0 0 15px rgba(0, 234, 255, 0.8);
+    /* pequenas instruções no canto (opcional) */
+    .hint{
+      position:absolute;left:18px;bottom:18px;color:#fff8; font-family:system-ui,Segoe UI,Roboto,Arial,sans-serif;font-size:13px;z-index:50;
+      text-shadow:0 1px 0 rgba(0,0,0,0.6);
     }
 
-    .profile-card p {
-      font-size: 18px;
-      margin-bottom: 20px;
-      opacity: 0.9;
-    }
-
-    .topics {
-      text-align: left;
-      margin-top: 20px;
-      font-size: 18px;
-      line-height: 1.8;
-    }
-
-    .topics h3 {
-      font-size: 20px;
-      margin-bottom: 10px;
-      color: #001f3f; /* azul escuro */
-      text-shadow: 0 0 10px rgba(0, 234, 255, 0.4);
-    }
-
-    .topics p {
-      color: #001f3f; /* azul escuro */
-      font-weight: 600;
-    }
-
-    /* ===== GALERIA ===== */
-    .gallery {
-      flex: 2;
-      display: grid;
-      grid-template-columns: repeat(2, 1fr);
-      gap: 20px;
-    }
-
-    .gallery-item {
-      position: relative;
-      border-radius: 15px;
-      overflow: hidden;
-      background: rgba(255, 255, 255, 0.08);
-      backdrop-filter: blur(12px);
-      border: 1px solid rgba(255, 255, 255, 0.25);
-      transition: transform 0.4s ease, box-shadow 0.4s ease;
-      cursor: pointer;
-    }
-
-    .gallery-item img {
-      width: 100%;
-      height: 100%;
-      object-fit: cover;
-      transition: transform 0.4s ease;
-    }
-
-    .gallery-item:hover {
-      transform: scale(1.05);
-      box-shadow: 0 0 25px rgba(255, 255, 255, 0.5);
-    }
-
-    .gallery-item:hover img {
-      transform: scale(1.1);
-    }
-
-    .gallery-title {
-      position: absolute;
-      bottom: 10px;
-      left: 50%;
-      transform: translateX(-50%);
-      background: rgba(0, 0, 0, 0.5);
-      padding: 6px 12px;
-      border-radius: 8px;
-      font-size: 16px;
-      color: #fff;
-      text-shadow: 0 0 10px #00eaff;
-    }
-
-    /* ===== POPUP ===== */
-    .popup {
-      display: none;
-      position: fixed;
-      top: 0; left: 0;
-      width: 100%; height: 100%;
-      background: rgba(0,0,0,0.8);
-      justify-content: center;
-      align-items: center;
-      z-index: 100;
-    }
-
-    .popup img {
-      max-width: 90%;
-      max-height: 80%;
-      border-radius: 15px;
-      box-shadow: 0 0 25px rgba(255,255,255,0.7);
-    }
-
-    .popup.active {
-      display: flex;
-    }
-
-    /* ===== RODAPÉ ===== */
-    footer {
-      text-align: center;
-      padding: 20px;
-      font-size: 16px;
-      background: rgba(0, 0, 0, 0.3);
-      backdrop-filter: blur(10px);
-      border-top: 1px solid rgba(255, 255, 255, 0.2);
-      margin-top: 40px;
-    }
-
-    /* ===== BOTÃO FLUTUANTE ÁUDIO ===== */
-    .audio-player {
-      position: fixed;
-      bottom: 20px;
-      right: 20px;
-      z-index: 200;
-    }
-
-    .audio-player button {
-      width: 60px;
-      height: 60px;
-      border-radius: 50%;
-      border: none;
-      background: rgba(0, 234, 255, 0.8);
-      box-shadow: 0 0 15px rgba(0, 234, 255, 0.7);
-      color: #000;
-      font-size: 24px;
-      cursor: pointer;
-      transition: transform 0.2s ease;
-    }
-
-    .audio-player button:hover {
-      transform: scale(1.1);
+    /* Responsividade mínima: escala a stage para caber viewports menores */
+    @media (max-width:1920px){
+      .stage{transform:scale(0.9);} /* apenas para demo - você pode ajustar */
     }
   </style>
 </head>
 <body>
+  <div class="stage" role="main" aria-label="Página com GIF interativo">
+    <div id="particles"></div>
 
-  <div class="container">
-    <!-- PERFIL -->
-    <div class="profile-card">
-      <img src="https://xatimg.com/image/zNtKHn6KSCLh.png" alt="Zayron Foto">
-      <h2>Zayron</h2>
-      <p>@EuSouZayron</p>
-      <div class="topics">
-        <h3>Vendo / Sell</h3>
-        <p>Fundos</p>
-        <p>Pcbacks</p>
-        <p>Backgrounds</p>
-        <p>Xatspace</p>
+    <div class="hero">
+      <div class="gif-wrap" id="gifWrap" aria-hidden="false" title="Passe o mouse para ver o efeito 3D">
+        <img id="mainGif" src="https://xatimg.com/image/epEK4CZvcecV.gif" alt="GIF"/>
       </div>
     </div>
 
-    <!-- GALERIA -->
-    <div class="gallery">
-      <div class="gallery-item">
-        <img src="https://xatimg.com/image/UZa2Jwcoc5iP.png" alt="Doação">
-        <div class="gallery-title">Doação</div>
-      </div>
-      <div class="gallery-item">
-        <img src="https://xatimg.com/image/teH1fefntHOP.png" alt="Turma do Careca">
-        <div class="gallery-title">Turma do Careca</div>
-      </div>
-      <div class="gallery-item">
-        <img src="https://xatimg.com/image/igEs2LzecSew.png" alt="Dulce Diabluras">
-        <div class="gallery-title">Dulce Diabluras</div>
-      </div>
-      <div class="gallery-item">
-        <img src="https://xatimg.com/image/jPKRVcsQG2oc.png" alt="Mix Hits">
-        <div class="gallery-title">Mix Hits</div>
-      </div>
-      <div class="gallery-item">
-        <img src="https://xatimg.com/image/EspAEzrD4pZZ.png" alt="Morena">
-        <div class="gallery-title">Morena</div>
-      </div>
-      <div class="gallery-item">
-        <img src="https://xatimg.com/image/62DiLW4CdNGI.png" alt="Stormbornn">
-        <div class="gallery-title">Stormbornn</div>
-      </div>
-    </div>
-  </div>
+    <footer>
+      <button class="logo-btn" id="logoBtn" aria-label="Explodir estrelas">
+        <img src="https://xatimg.com/image/CEOwVQMbTHld.png" alt="Logo" />
+      </button>
+    </footer>
 
-  <!-- POPUP -->
-  <div class="popup" id="popup">
-    <img id="popup-img" src="">
-  </div>
-
-  <!-- RODAPÉ -->
-  <footer>
-    Feito com amor 🤍 Zayron - 2025
-  </footer>
-
-  <!-- BOTÃO ÁUDIO -->
-  <div class="audio-player" id="audio-player">
-    <button id="playPauseBtn">▶</button>
-    <iframe id="ytplayer" width="0" height="0"
-      src="https://www.youtube.com/embed/a09V1CwxTp4?enablejsapi=1"
-      frameborder="0"></iframe>
+    <div class="hint">Clique na logo para explodir estrelas ✨</div>
   </div>
 
   <script>
-    // POPUP SCRIPT
-    const items = document.querySelectorAll('.gallery-item img');
-    const popup = document.getElementById('popup');
-    const popupImg = document.getElementById('popup-img');
+    /* Efeito de inclinar o cartão conforme o cursor para sensação 3D */
+    (function(){
+      const wrap = document.getElementById('gifWrap');
+      const stage = document.querySelector('.stage');
+      let isInside = false;
 
-    items.forEach(img => {
-      img.addEventListener('click', () => {
-        popup.classList.add('active');
-        popupImg.src = img.src;
-      });
-    });
+      function onMove(e){
+        const rect = wrap.getBoundingClientRect();
+        const cx = rect.left + rect.width/2;
+        const cy = rect.top + rect.height/2;
+        const x = (e.clientX - cx) / (rect.width/2); // -1 .. 1
+        const y = (e.clientY - cy) / (rect.height/2); // -1 .. 1
+        const rotY = x * 8; // graus
+        const rotX = -y * 6; // graus
+        wrap.style.transform = `rotateX(${rotX}deg) rotateY(${rotY}deg) translateZ(10px)`;
+        if(!wrap.classList.contains('hover-animate')) wrap.classList.add('hover-animate');
+      }
 
-    popup.addEventListener('click', () => {
-      popup.classList.remove('active');
-      popupImg.src = "";
-    });
+      function onEnter(e){
+        isInside = true;
+        wrap.style.transition = 'transform 280ms cubic-bezier(.2,.9,.25,1)';
+        wrap.classList.add('hover-animate');
+        document.addEventListener('mousemove', onMove);
+      }
+      function onLeave(e){
+        isInside = false;
+        document.removeEventListener('mousemove', onMove);
+        wrap.style.transition = 'transform 600ms cubic-bezier(.2,.9,.25,1)';
+        wrap.style.transform = 'rotateX(0deg) rotateY(0deg) translateZ(0px)';
+        wrap.classList.remove('hover-animate');
+      }
 
-    // ===== PLAYER YOUTUBE =====
-    let player;
-    const playPauseBtn = document.getElementById("playPauseBtn");
+      wrap.addEventListener('mouseenter', onEnter);
+      wrap.addEventListener('mouseleave', onLeave);
+    })();
 
-    function onYouTubeIframeAPIReady() {
-      player = new YT.Player("ytplayer", {
-        events: {
-          "onReady": onPlayerReady
+    /* Partículas: explosão de estrelas amarelas no clique da logo */
+    (function(){
+      const stage = document.querySelector('.stage');
+      const canvas = document.createElement('canvas');
+      canvas.id = 'particles';
+      stage.prepend(canvas);
+      const ctx = canvas.getContext('2d');
+      let DPR = window.devicePixelRatio || 1;
+
+      function resize(){
+        canvas.width = stage.clientWidth * DPR;
+        canvas.height = stage.clientHeight * DPR;
+        canvas.style.width = stage.clientWidth + 'px';
+        canvas.style.height = stage.clientHeight + 'px';
+        ctx.setTransform(DPR,0,0,DPR,0,0);
+      }
+      resize();
+      window.addEventListener('resize', resize);
+
+      // util: random
+      const rand = (a,b)=> Math.random()*(b-a)+a;
+
+      // estrela como caminho
+      function drawStar(ctx,x,y,r,rot){
+        ctx.save();
+        ctx.translate(x,y);
+        ctx.rotate(rot);
+        ctx.beginPath();
+        for(let i=0;i<5;i++){
+          ctx.lineTo(Math.cos((18+72*i)/180*Math.PI)*r, -Math.sin((18+72*i)/180*Math.PI)*r);
+          ctx.lineTo(Math.cos((54+72*i)/180*Math.PI)*(r*0.5), -Math.sin((54+72*i)/180*Math.PI)*(r*0.5));
         }
-      });
-    }
-
-    function onPlayerReady() {
-      playPauseBtn.addEventListener("click", () => {
-        if (player.getPlayerState() === 1) { // Tocando
-          player.pauseVideo();
-          playPauseBtn.textContent = "▶";
-        } else {
-          player.playVideo();
-          playPauseBtn.textContent = "⏸";
-        }
-      });
-    }
-
-    // Carrega API do YouTube
-    const tag = document.createElement("script");
-    tag.src = "https://www.youtube.com/iframe_api";
-    document.body.appendChild(tag);
-  </script>
-
-</body>
-</html>
+        ctx.closePath();
+        ctx.fillStyle = 'rgba(255,215,0,1)';
+        ctx.fill();
+        ctx.restore();
