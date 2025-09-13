@@ -1,220 +1,152 @@
-<!doctype html>
+<!DOCTYPE html>
 <html lang="pt-BR">
 <head>
-  <meta charset="utf-8" />
-  <meta name="viewport" content="width=device-width,initial-scale=1" />
-  <title>Página 1920x1080 — Efeito 3D Fullscreen</title>
+  <meta charset="UTF-8">
+  <title>GIF Futurista</title>
   <style>
-    /* reset */
-    html,body{height:100%;margin:0;padding:0;background:#000;}
-    body{overflow:hidden;-webkit-font-smoothing:antialiased;-moz-osx-font-smoothing:grayscale}
-
-    /* Stage (base 1920x1080) -- será escalado para ocupar toda a tela mantendo proporção */
-    .stage{
-      width:1920px;
-      height:1080px;
-      position:absolute;
-      left:50%;
-      top:50%;
-      transform-origin:center center;
-      transform:translate(-50%,-50%) scale(1);
-      background:#000;
-      overflow:hidden;
-      border-radius:6px;
-      box-shadow:0 30px 80px rgba(0,0,0,0.75);
-      -webkit-backface-visibility:hidden;
-      backface-visibility:hidden;
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+    html, body {
+      width: 100%; height: 100%;
+      overflow: hidden; background: #000;
     }
 
-    /* leve overlay de brilho red/black por cima de tudo */
-    .stage::before{
-      content:'';position:absolute;inset:0;pointer-events:none;
-      background: radial-gradient(60% 50% at 20% 30%, rgba(255,30,30,0.10), transparent 12%),
-                  linear-gradient(180deg, rgba(0,0,0,0.18), rgba(0,0,0,0.45));
-      mix-blend-mode:screen;opacity:1;transition:opacity .6s ease-in-out;
+    /* fundo + brilho */
+    body::before {
+      content: "";
+      position: fixed; inset: 0;
+      background: radial-gradient(circle at center, rgba(255,0,0,0.1), transparent 70%),
+                  linear-gradient(180deg, rgba(0,0,0,0.3), rgba(0,0,0,0.7));
+      z-index: 1; pointer-events: none;
     }
 
-    /* área central com perspectiva 3D */
-    .hero{position:absolute;inset:0;display:flex;align-items:center;justify-content:center;perspective:1400px}
-
-    /* wrapper do GIF: usamos variáveis CSS para compor transform sem conflitos com animação */
-    .gif-wrap{
-      width:1100px;height:620px;border-radius:18px;overflow:hidden;display:flex;align-items:center;justify-content:center;
-      transform-style:preserve-3d;will-change:transform;cursor:pointer;user-select:none;
+    /* GIF central */
+    .gif-wrap {
+      position: absolute; top: 50%; left: 50%;
+      transform: translate(-50%, -50%);
+      width: 60vw; max-width: 1100px; aspect-ratio: 16/9;
+      border-radius: 20px; overflow: hidden;
+      transform-style: preserve-3d; will-change: transform;
       --rx: 0deg; --ry: 0deg; --tx: 0px;
-      transform: rotateX(var(--rx)) rotateY(var(--ry)) translateZ(18px) translateX(var(--tx));
-      transition:transform 250ms cubic-bezier(.2,.9,.25,1), box-shadow 220ms;
-      box-shadow: 0 28px 80px rgba(0,0,0,0.6), inset 0 1px 0 rgba(255,255,255,0.02);
-      background: linear-gradient(180deg, rgba(0,0,0,0.25), rgba(0,0,0,0.45));
+      transform: translate(-50%, -50%) rotateX(var(--rx)) rotateY(var(--ry)) translateX(var(--tx));
+      transition: transform 0.2s ease-out;
+      z-index: 2;
+    }
+    .gif-wrap.swaying { animation: sway 3s ease-in-out infinite; }
+    @keyframes sway { 0%{--tx:-6px} 50%{--tx:6px} 100%{--tx:-6px} }
+
+    .gif-wrap img {
+      width: 100%; height: 100%; object-fit: cover;
+      display: block; pointer-events: none;
     }
 
-    /* animação leve de sway que mexe apenas a variável --tx (não sobrescreve rotacoes) */
-    .gif-wrap.swaying{
-      animation: swayVars 3s ease-in-out infinite;
+    /* logo no rodapé */
+    footer {
+      position: fixed; bottom: 20px; left: 50%;
+      transform: translateX(-50%);
+      z-index: 3;
     }
-    @keyframes swayVars{
-      0%{--tx:-6px} 50%{--tx:6px} 100%{--tx:-6px}
+    #logoBtn {
+      background: transparent; border: none; cursor: pointer;
+      width: 140px; height: auto; transition: transform 0.15s;
     }
+    #logoBtn:active { transform: scale(0.95); }
+    #logoBtn img { width: 100%; display: block; }
 
-    .gif-inner{width:100%;height:100%;display:block}
-    .gif-inner img{width:100%;height:100%;object-fit:cover;display:block;pointer-events:none}
-
-    /* rodapé com logo (visível e clicável) */
-    footer{position:absolute;left:0;right:0;bottom:26px;display:flex;justify-content:center;pointer-events:auto;z-index:60}
-    .logo-btn{pointer-events:auto;user-select:none;display:inline-block;width:140px;height:56px;border-radius:10px;background:transparent;border:0;padding:6px;cursor:pointer;transition:transform .14s ease}
-    .logo-btn img{width:100%;height:100%;object-fit:contain;display:block}
-    .logo-btn:active{transform:scale(.96)}
-
-    /* canvas de partículas ocupa exatamente o tamanho da stage (1920x1080) */
-    canvas#particles{position:absolute;left:0;top:0;width:1920px;height:1080px;pointer-events:none;z-index:55}
-
-    /* instrução */
-    .hint{position:absolute;left:18px;bottom:18px;color:rgba(255,255,255,0.9);font-family:system-ui,Segoe UI,Roboto,Arial,sans-serif;font-size:13px;z-index:70;text-shadow:0 1px 0 rgba(0,0,0,0.5)}
-
-    /* pequena responsividade para viewports muito estreitas: reduz borda arredondada */
-    @media (max-width:800px){ .stage{border-radius:0} }
+    /* canvas partículas */
+    canvas#particles {
+      position: fixed; inset: 0;
+      width: 100%; height: 100%;
+      z-index: 2; pointer-events: none;
+    }
   </style>
 </head>
 <body>
-  <div class="stage" id="stage" role="main" aria-label="Página interativa 1920 por 1080">
+  <canvas id="particles"></canvas>
 
-    <canvas id="particles" aria-hidden="true"></canvas>
-
-    <div class="hero">
-      <div class="gif-wrap" id="gifWrap" title="Passe o mouse para ver o efeito 3D">
-        <div class="gif-inner">
-          <img id="mainGif" src="https://xatimg.com/image/epEK4CZvcecV.gif" alt="GIF" />
-        </div>
-      </div>
-    </div>
-
-    <footer>
-      <button id="logoBtn" class="logo-btn" aria-label="Explodir estrelas">
-        <img src="https://xatimg.com/image/CEOwVQMbTHld.png" alt="Logo" />
-      </button>
-    </footer>
-
-    <div class="hint">Passe o mouse sobre o GIF e clique na logo para explodir estrelas ✨</div>
+  <div class="gif-wrap" id="gifWrap">
+    <img src="https://xatimg.com/image/epEK4CZvcecV.gif" alt="GIF">
   </div>
 
-  <script>
-    /* ====== Escalador: encaixa a stage 1920x1080 na tela inteira mantendo proporção ====== */
-    (function(){
-      const stage = document.getElementById('stage');
-      let currentScale = 1;
-      function fitStage(){
-        const vw = window.innerWidth;
-        const vh = window.innerHeight;
-        const scale = Math.min(vw/1920, vh/1080);
-        currentScale = scale;
-        stage.style.transform = `translate(-50%,-50%) scale(${scale})`;
-      }
-      window.addEventListener('resize', fitStage, {passive:true});
-      fitStage();
-      window._stageScale = ()=> currentScale; // debug helper
-    })();
+  <footer>
+    <button id="logoBtn">
+      <img src="https://xatimg.com/image/CEOwVQMbTHld.png" alt="Logo">
+    </button>
+  </footer>
 
-    /* ====== Efeito de inclinação + leve oscilação (3D-like) ====== */
+  <script>
+    /* ===== Tilt + sway ===== */
     (function(){
       const wrap = document.getElementById('gifWrap');
-      let inside = false;
-      let swayTimeout = null;
+      let inside = false, timeout;
 
-      function onMove(e){
+      function move(e) {
         const rect = wrap.getBoundingClientRect();
-        const cx = rect.left + rect.width/2;
-        const cy = rect.top + rect.height/2;
-        const x = (e.clientX - cx) / (rect.width/2); // -1 .. 1
-        const y = (e.clientY - cy) / (rect.height/2); // -1 .. 1
-        const rotY = x * 6; // graus
-        const rotX = -y * 5; // graus
-        wrap.style.setProperty('--rx', rotX + 'deg');
-        wrap.style.setProperty('--ry', rotY + 'deg');
-        // garantir que a animação sway esteja ativa enquanto dentro
+        const cx = rect.left + rect.width/2, cy = rect.top + rect.height/2;
+        const x = (e.clientX - cx) / (rect.width/2);
+        const y = (e.clientY - cy) / (rect.height/2);
+        wrap.style.setProperty('--ry', (x*6)+'deg');
+        wrap.style.setProperty('--rx', (-y*5)+'deg');
         if(!wrap.classList.contains('swaying')) wrap.classList.add('swaying');
-        // reset timeout to keep swaying while user estiver por perto
-        if(swayTimeout) clearTimeout(swayTimeout);
-        swayTimeout = setTimeout(()=>{ if(!inside) wrap.classList.remove('swaying') }, 900);
+        clearTimeout(timeout);
+        timeout = setTimeout(()=>{ if(!inside) wrap.classList.remove('swaying'); }, 800);
       }
 
-      function onEnter(e){ inside=true; wrap.classList.add('swaying'); document.addEventListener('mousemove', onMove); }
-      function onLeave(e){ inside=false; document.removeEventListener('mousemove', onMove); wrap.style.setProperty('--rx','0deg'); wrap.style.setProperty('--ry','0deg'); /* keep slight sway briefly */ setTimeout(()=>{ if(!inside) wrap.classList.remove('swaying') }, 600); }
-
-      wrap.addEventListener('mouseenter', onEnter);
-      wrap.addEventListener('mouseleave', onLeave);
-      // também touch-friendly: remove efeitos em toque para evitar conflitos
-      wrap.addEventListener('touchstart', ()=>{ wrap.classList.add('swaying'); });
-      wrap.addEventListener('touchend', ()=>{ wrap.classList.remove('swaying'); });
+      wrap.addEventListener('mouseenter', ()=>{ inside=true; document.addEventListener('mousemove', move); });
+      wrap.addEventListener('mouseleave', ()=>{ inside=false; document.removeEventListener('mousemove', move);
+        wrap.style.setProperty('--rx','0deg'); wrap.style.setProperty('--ry','0deg');
+        setTimeout(()=>{ if(!inside) wrap.classList.remove('swaying'); }, 600);
+      });
     })();
 
-    /* ====== Partículas: explosão de estrelas amarelas quando clica na logo ====== */
+    /* ===== Estrelas ===== */
     (function(){
-      const stage = document.getElementById('stage');
       const canvas = document.getElementById('particles');
       const ctx = canvas.getContext('2d');
-      let DPR = window.devicePixelRatio || 1;
+      let W, H, DPR = window.devicePixelRatio||1;
 
-      function resizeCanvas(){
-        // canvas should be unscaled size 1920x1080 (stage internal coordinates)
-        canvas.width = 1920 * DPR;
-        canvas.height = 1080 * DPR;
-        canvas.style.width = '1920px';
-        canvas.style.height = '1080px';
+      function resize() {
+        W = window.innerWidth; H = window.innerHeight;
+        canvas.width = W*DPR; canvas.height = H*DPR;
         ctx.setTransform(DPR,0,0,DPR,0,0);
       }
-      resizeCanvas();
-      window.addEventListener('resize', () => { DPR = window.devicePixelRatio || 1; resizeCanvas(); });
+      resize(); window.addEventListener('resize', resize);
 
-      const rand = (a,b)=> Math.random()*(b-a)+a;
-
-      function drawStar(ctx,x,y,r,rot){
+      function star(ctx,x,y,r,rot){
         ctx.save(); ctx.translate(x,y); ctx.rotate(rot);
         ctx.beginPath();
         for(let i=0;i<5;i++){
           ctx.lineTo(Math.cos((18+72*i)/180*Math.PI)*r, -Math.sin((18+72*i)/180*Math.PI)*r);
           ctx.lineTo(Math.cos((54+72*i)/180*Math.PI)*(r*0.5), -Math.sin((54+72*i)/180*Math.PI)*(r*0.5));
         }
-        ctx.closePath(); ctx.fillStyle = 'rgba(255,215,0,1)'; ctx.fill(); ctx.restore();
+        ctx.closePath(); ctx.fillStyle = 'gold'; ctx.fill(); ctx.restore();
       }
 
       let particles = [];
-      const gravity = 0.22;
-
       function spawn(x,y){
-        const count = 28;
-        for(let i=0;i<count;i++){
-          const speed = rand(3,10);
-          const angle = rand(0, Math.PI*2);
-          particles.push({ x:x, y:y, vx:Math.cos(angle)*speed, vy:Math.sin(angle)*speed - rand(1,4), rot:rand(0,Math.PI*2), vrot:rand(-0.18,0.18), life: rand(50,140), age:0, size: rand(6,14), alpha:1 });
+        for(let i=0;i<28;i++){
+          const speed = Math.random()*6+3, ang=Math.random()*2*Math.PI;
+          particles.push({x,y,vx:Math.cos(ang)*speed,vy:Math.sin(ang)*speed,
+            rot:Math.random()*6, vrot:(Math.random()-0.5)*0.2, life:60+Math.random()*60, age:0, size:6+Math.random()*10});
         }
       }
 
       function update(){
         for(let i=particles.length-1;i>=0;i--){
-          const p = particles[i]; p.vy += gravity*0.4; p.x += p.vx; p.y += p.vy; p.rot += p.vrot; p.age++; p.alpha = 1 - p.age / p.life; if(p.age>p.life) particles.splice(i,1);
+          const p=particles[i];
+          p.x+=p.vx; p.y+=p.vy; p.vy+=0.2; p.rot+=p.vrot; p.age++;
+          if(p.age>p.life) particles.splice(i,1);
         }
       }
-      function draw(){ ctx.clearRect(0,0,1920,1080); for(const p of particles){ ctx.globalAlpha = Math.max(0, p.alpha); drawStar(ctx, p.x, p.y, p.size, p.rot); } ctx.globalAlpha = 1; }
-      function tick(){ update(); draw(); requestAnimationFrame(tick); }
-      tick();
+      function draw(){
+        ctx.clearRect(0,0,W,H);
+        particles.forEach(p=>{ ctx.globalAlpha=1-p.age/p.life; star(ctx,p.x,p.y,p.size,p.rot); });
+        ctx.globalAlpha=1;
+      }
+      (function loop(){ update(); draw(); requestAnimationFrame(loop); })();
 
-      // ligar o click da logo
-      const logo = document.getElementById('logoBtn');
-      logo.addEventListener('click', (ev)=>{
-        const rect = stage.getBoundingClientRect();
-        // compensar o scale aplicado ao stage
-        // scale = visible rect.width / 1920
-        const scale = rect.width / 1920;
-        const cx = (ev.clientX - rect.left) / scale; // coordenada no sistema 1920x1080
-        const cy = (ev.clientY - rect.top)  / scale;
-        spawn(cx, cy);
-
-        // pequeno pulso visual no botão
-        logo.animate([
-          { transform: 'scale(1)' }, { transform: 'scale(1.12)' }, { transform: 'scale(1)' }
-        ], { duration: 420, easing: 'cubic-bezier(.2,.9,.25,1)' });
+      document.getElementById('logoBtn').addEventListener('click',e=>{
+        spawn(e.clientX, e.clientY);
       });
-
     })();
   </script>
 </body>
